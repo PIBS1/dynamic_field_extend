@@ -1,15 +1,17 @@
 <?php
-namespace Amuz\XePlugin\DynamicFieldExtend\DynamicFields\Calendar;
 
-use Carbon\Carbon;
+namespace Amuz\XePlugin\DynamicFieldExtend\DynamicFields\ToDoList;
+
 use Xpressengine\Config\ConfigEntity;
 use Xpressengine\DynamicField\AbstractType;
-use Xpressengine\DynamicField\ColumnDataType;
 use Xpressengine\DynamicField\ColumnEntity;
+use Xpressengine\DynamicField\ColumnDataType;
+use Xpressengine\Menu\Models\MenuItem;
 
-class CalendarField extends AbstractType
+class ToDoListField extends AbstractType
 {
-    protected static $path = 'dynamic_field_extend/src/DynamicFields/CalendarField';
+
+    protected static $path = 'vimeo/components/DynamicFields/ToDoList';
 
     /**
      * get field type name
@@ -18,7 +20,7 @@ class CalendarField extends AbstractType
      */
     public function name()
     {
-        return 'Calendar - 날짜 선택';
+        return '오늘 해야할 일 리스트 Dynamic Field';
     }
 
     /**
@@ -28,7 +30,7 @@ class CalendarField extends AbstractType
      */
     public function description()
     {
-        return '날짜를 선택하여 입력 할 수 있습니다.';
+        return '오늘 해야할 일 리스트를 작성할 수 있습니다';
     }
 
     /**
@@ -39,8 +41,7 @@ class CalendarField extends AbstractType
     public function getColumns()
     {
         return [
-            'start' => new ColumnEntity('start', ColumnDataType::TIMESTAMP),
-            'end' => new ColumnEntity('end', ColumnDataType::TIMESTAMP)
+            'columns' => new ColumnEntity('columns', ColumnDataType::TEXT),
         ];
     }
 
@@ -51,7 +52,7 @@ class CalendarField extends AbstractType
      */
     public function getSettingsRules()
     {
-        return ['date_type' => 'required'];
+        return [];
     }
 
     /**
@@ -63,40 +64,9 @@ class CalendarField extends AbstractType
      */
     public function getSettingsView(ConfigEntity $config = null)
     {
-        return view('dynamic_field_extend::src/DynamicFields/Calendar/views/setting', [
-            'config' => $config
+        return view('vimeo::components/DynamicFields/TimeTable/views/setting',[
+            'config' => $config,
         ]);
-    }
-
-    /**
-     * return rules
-     *
-     * @return array
-     */
-    public function getRules()
-    {
-        $required = $this->config->get('required') === true;
-
-        $rules = [];
-        $names = array_map(function () {
-            return '';
-        }, $this->getColumns());
-
-        if($this->config->get('date_type') == 'single'){
-            $names = ['start' => ''];
-        }
-
-        foreach (array_merge($names, $this->rules) as $name => $rule) {
-            $key = $this->config->get('id') . '_' . $name;
-
-            if ($required == true) {
-                $rules[$key] = ltrim($rule . '|required', '|');
-            } else {
-                $rules[$key] = 'nullable|' . $rule;
-            }
-        }
-
-        return $rules;
     }
 
     /**
@@ -112,6 +82,7 @@ class CalendarField extends AbstractType
         if (isset($args[$config->get('joinColumnName')]) === false) {
             throw new Exceptions\RequiredJoinColumnException;
         }
+
         $insertParam = [];
         $insertParam['field_id'] = $config->get('id');
         $insertParam['target_id'] = $args[$config->get('joinColumnName')];
@@ -120,8 +91,7 @@ class CalendarField extends AbstractType
         foreach ($this->getColumns() as $column) {
             $key = $config->get('id') . '_' . $column->name;
             if (isset($args[$key]) == true) {
-                $dateTime_data = $this->setDateTimeData($config, $args);
-                $insertParam[$column->name] = $dateTime_data[$column->name];
+                $insertParam[$column->name] = $args[$key];
             }
         }
 
@@ -167,9 +137,9 @@ class CalendarField extends AbstractType
         $updateParam = [];
         foreach ($this->getColumns() as $column) {
             $key = $config->get('id') . '_' . $column->name;
-            if (isset($args[$key]) == true) {
-                $dateTime_data = $this->setDateTimeData($config, $args);
-                $updateParam[$column->name] = $dateTime_data[$column->name];
+
+            if (isset($args[$key])) {
+                $updateParam[$column->name] = $args[$key]; // 배열이 json 형태로 들어옴
             }
         }
 
@@ -201,46 +171,33 @@ class CalendarField extends AbstractType
         );
     }
 
-    private function setDateTimeData($config, $args) {
+    /**
+     * 생성된 Dynamic Field revision 테이블에 데이터 입력
+     *
+     * @param array $args parameters
+     * @return void
+     */
+    public function insertRevision(array $args)
+    {
+        if (isset($args['id']) === false) {
+            throw new Exceptions\RequiredDynamicFieldException;
+        }
+
+        $insertParam = [];
+        $insertParam['target_id'] = $args['id'];
+        $insertParam['group'] = $this->config->get('group');
+        $insertParam['field_id'] = $this->config->get('id');
+        $insertParam['revision_id'] = $args['revision_id'];
+        $insertParam['revision_no'] = $args['revision_no'];
 
         foreach ($this->getColumns() as $column) {
-            $key = $config->get('id') . '_' . $column->name;
-            if (isset($args[$key]) == true) {
-                $date = date('Ymd', strtotime($args[$key][0]));
-                $date = str_replace('-', '', $date);
-                $date = date('Y-m-d', strtotime($date));
-                if($column->name === 'start') $time = $args[$key][1] ?: '00:00';
-                else $time = $args[$key][1] ?: '23:59';
+            $key = $this->config->get('id') . '_' . $column->name;
 
-                $dateTime[$column->name] = $date;
-                $dateTime[$column->name.'_time'] = $time;
-
-                if($config->get('picker_type') === 'date') {
-                    if($column->name === 'start') {
-                        $dateTime[$column->name.'_time'] = '00:00';
-                    } elseif($column->name === 'end') {
-                        $dateTime[$column->name.'_time'] = '23:59';
-                    }
-                }
-                if($config->get('date_type') == 'single') {
-                    if($column->name === 'end') {
-                        $dateTime[$column->name] = $dateTime['start'];
-                    }
-                }
-                if($config->get('time_type') == 'single') {
-                    if($column->name === 'end_time') {
-                        $dateTime[$column->name.'_time'] = $dateTime['start_time'];
-                    }
-                }
+            if (isset($args[$key])) {
+                $insertParam[$column->name] = json_encode($args[$key]); // 배열의 형태이기 때문에 json 으로 저장
             }
         }
 
-        $start_dateTime = $dateTime['start'].' '.$dateTime['start_time'].':00';
-        $end_dateTime = $dateTime['end'].' '.$dateTime['end_time'].':59';
-        $start = Carbon::createFromFormat('Y-m-d H:i:s', $start_dateTime);
-        $end = Carbon::createFromFormat('Y-m-d H:i:s', $end_dateTime);
-
-        return compact('start', 'end');
+        $this->handler->connection()->table($this->getRevisionTableName())->insert($insertParam);
     }
-
 }

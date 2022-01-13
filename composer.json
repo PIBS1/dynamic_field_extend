@@ -153,6 +153,11 @@
                     "description": "The fieldSkin supported by Dynamic_field plugin.",
                     "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFieldSkins\\CategoryLoad\\CategoryLoadCheckBox\\CategoryLoadCheckBox"
                 },
+                "fieldType/dynamic_field_extend@CategoryLoad/fieldSkin/dynamic_field_extend@CategoryLoadDepth": {
+                  "name": "CategoryLoadDepthSkin fieldSkin",
+                  "description": "The fieldSkin supported by Dynamic_field plugin.",
+                  "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFieldSkins\\CategoryLoad\\CategoryLoadDepth\\CategoryLoadDepth"
+                },
                 "fieldType/dynamic_field_extend@CategoryInput": {
                     "name": "CategoryInput fieldType",
                     "description": "The fieldType supported by Dynamic_field plugin.",
@@ -263,7 +268,6 @@
                     "name": "Kakao 스킨",
                     "description": "Kakao 지도 API 를 사용합니다."
                 },
-
                 "fieldType/dynamic_field_extend@HtmlLanding": {
                   "name": "HTML 코드 랜딩 fieldType",
                   "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFields\\HtmlLanding\\HtmlLandingField",
@@ -273,7 +277,37 @@
                   "name": "HTML 코드 랜딩 fieldType DefaultSkin",
                   "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFieldSkins\\HtmlLandingDefault\\HtmlLandingDefault",
                   "description": "HTML 코드 랜딩 fieldType DefaultSkin"
-                }
+                },
+                "fieldType/dynamic_field_extend@ToDoList": {
+                  "name": "To Do List fieldType",
+                  "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFields\\ToDoList\\ToDoListField",
+                  "description": "To Do List fieldType"
+                },
+                "fieldType/dynamic_field_extend@ToDoList/fieldSkin/dynamic_field_extend@default": {
+                  "name": "To Do List fieldType DefaultSkin",
+                  "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFields\\ToDoList\\Skins\\Common\\CommonSkin",
+                  "description": "To Do List fieldType DefaultSkin"
+                },
+              "fieldType/dynamic_field_extend@SignCanvas": {
+                "name": "고객서명 fieldType",
+                "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFields\\SignCanvas\\SignCanvasField",
+                "description": "고객서명 fieldType"
+              },
+              "fieldType/dynamic_field_extend@SignCanvas/fieldSkin/dynamic_field_extend@default": {
+                "name": "고객서명 fieldType DefaultSkin",
+                "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFieldSkins\\SignCanvasDefault\\SignCanvasSkin",
+                "description": "고객서명 fieldType DefaultSkin"
+              },
+              "fieldType/xpressengine@Textarea/fieldSkin/dynamic_field_extend@JsonParser": {
+                "name": "Textarea Json Parse Viewer Style",
+                "description": "Textarea Json Parse Viewer Style Dynamic_field plugin Skin.",
+                "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFieldSkins\\TextareaJson\\TextareaJson"
+              },
+              "fieldType/xpressengine@Boolean/fieldSkin/dynamic_field_extend@BooleanSwitch": {
+                "name": "Boolean Switch Style Skin",
+                "description": "Boolean Field Switch Style Skin.",
+                "class": "Amuz\\XePlugin\\DynamicFieldExtend\\DynamicFieldSkins\\BooleanSwitch\\BooleanSwitch"
+              }
             }
         }
     },
