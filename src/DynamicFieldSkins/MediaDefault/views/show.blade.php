@@ -10,8 +10,10 @@
                 @if(XeStorage::find($data))
                     @php
                         $img_ok = array("gif", "png", "jpg", "jpeg", "bmp", "GIF", "PNG", "JPG", "JPEG", "BMP");
-                        $file_ext = explode(".", strrev(XeStorage::find($data)->filename));
-                        $file_ext = strrev($file_ext[0]);
+                        if(isset(XeStorage::find($data)->filename)){
+                            $file_ext = explode(".", strrev(XeStorage::find($data)->filename));
+                            $file_ext = strrev($file_ext[0]);
+                        }
                     @endphp
                     @if(in_array($file_ext, $img_ok))
                         <div>

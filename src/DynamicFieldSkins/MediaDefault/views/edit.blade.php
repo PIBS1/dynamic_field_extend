@@ -111,7 +111,7 @@
     }
 
     function media_del(my_data) {
-        my_data.removeChild();
+        my_data.parentNode.removeChild(my_data);
     }
 
     function checkURL(url) {
