@@ -89,7 +89,7 @@
     }
 
     function media_del(my_data) {
-        my_data.remove();
+        my_data.removeChild();
     }
 
     function checkURL(url) {
